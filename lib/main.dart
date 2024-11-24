@@ -1,5 +1,4 @@
-import 'package:e_voting/view/auth/login/login_screen.dart';
-import 'package:e_voting/view/bottom_nav_screen.dart';
+import 'package:e_voting/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,6 +13,6 @@ void main() {
         titleLarge: TextStyle(fontWeight: FontWeight.bold),
       ),
     ),
-    home: BottomNavScreen(),
+    home: const SplashScreen(),
   ));
 }

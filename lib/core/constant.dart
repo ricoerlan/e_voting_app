@@ -10,15 +10,15 @@ const double defaultPadding = 16.0;
 
 class ApiEndPoints {
   // Fetch List
-  static const fetchChain = "/chain";
-  static const fetchCandidates = "/candidates";
+  static const fetchChain = "/chain/";
+  static const fetchCandidates = "/candidates/";
 
   // Voter
-  static const registerVoter = "/register_voter";
-  static const loginVoter = "/login_voter";
-  static const castVote = "/cast_vote";
+  static const registerVoter = "/register_voter/";
+  static const loginVoter = "/login_voter/";
+  static const castVote = "/vote/";
 
   // Committee
-  static const loginCommittee = "/login_committee";
-  static const registerCandidate = "/register_candidate";
+  static const loginCommittee = "/login_committee/";
+  static const registerCandidate = "/register_candidate/";
 }

@@ -1,11 +1,11 @@
-import 'package:e_voting/controller/voting_controller.dart';
+import 'package:e_voting/controller/candidate_controller.dart';
 import 'package:e_voting/data/model/candidate_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class VotingScreen extends StatelessWidget {
-  VotingScreen({super.key});
-  final VotingController votingController = Get.put(VotingController());
+class CandidateScreen extends StatelessWidget {
+  CandidateScreen({super.key});
+  final CandidateController votingController = Get.put(CandidateController());
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class VotingScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text(
-            'Voting',
+            'Candidate',
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.blueAccent,
@@ -28,7 +28,7 @@ class VotingScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Select a candidate to vote for:',
+                'Candidate List',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -36,8 +36,8 @@ class VotingScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              GetBuilder<VotingController>(
-                init: VotingController(),
+              GetBuilder<CandidateController>(
+                init: CandidateController(),
                 initState: (controller) => votingController.initializeData(),
                 builder: (controller) {
                   if (controller.isLoading) {
@@ -55,11 +55,6 @@ class VotingScreen extends StatelessWidget {
                               final candidate = controller.candidates[index];
                               return CandidateCard(
                                 candidate: candidate,
-                                isSelected:
-                                    controller.selectedCandidate == candidate,
-                                onTap: () {
-                                  controller.selectCandidate(candidate);
-                                },
                               );
                             },
                           ),
@@ -82,7 +77,7 @@ class VotingScreen extends StatelessWidget {
   // Vote Button Widget
   Widget _voteButton() {
     return GestureDetector(
-      onTap: () => votingController.castVote(),
+      onTap: () => votingController.addCandidate(),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
         decoration: BoxDecoration(
@@ -105,13 +100,13 @@ class VotingScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.exit_to_app,
+              Icons.group_add_outlined,
               color: Colors.white,
               size: 28,
             ),
             SizedBox(width: 10),
             Text(
-              'Cast Vote',
+              'Add Candidate',
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.white,
@@ -127,60 +122,53 @@ class VotingScreen extends StatelessWidget {
 
 class CandidateCard extends StatelessWidget {
   final CandidateModel candidate;
-  final bool isSelected;
-  final VoidCallback onTap;
 
   const CandidateCard({
     super.key,
     required this.candidate,
-    required this.isSelected,
-    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: isSelected ? Colors.blueAccent : Colors.transparent,
-            width: 2,
-          ),
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(
+          color: Colors.blueAccent,
+          width: 2,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              Icon(
-                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: isSelected ? Colors.blueAccent : Colors.grey,
-                size: 30,
-              ),
-              const SizedBox(width: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    candidate.name ?? '',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.blueAccent : Colors.black,
-                    ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            // Icon(
+            //   isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+            //   color: isSelected ? Colors.blueAccent : Colors.grey,
+            //   size: 30,
+            // ),
+            const SizedBox(width: 15),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  candidate.name ?? '',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    candidate.faculty ?? '',
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  candidate.faculty ?? '',
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

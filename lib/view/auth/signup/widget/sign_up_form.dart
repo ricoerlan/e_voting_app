@@ -1,8 +1,6 @@
-import 'package:dio/dio.dart';
-import 'package:e_voting/data/api_service/api_service.dart';
+import 'package:e_voting/controller/auth_controller.dart';
 import 'package:e_voting/core/constant.dart';
 import 'package:e_voting/view/auth/login/login_screen.dart';
-import 'package:e_voting/view/bottom_nav_screen.dart';
 import 'package:e_voting/view/widget/already_have_an_account_check.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide FormData;
@@ -16,11 +14,10 @@ class SignUpForm extends StatefulWidget {
 
 class _SignUpFormState extends State<SignUpForm> {
   _SignUpFormState();
+  final authController = Get.find<AuthController>();
   final TextEditingController nimController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  // final AuthController _authController = Get.put(AuthController());
   final _formKey = GlobalKey<FormState>();
-  final _apiService = ApiService();
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +30,17 @@ class _SignUpFormState extends State<SignUpForm> {
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.next,
             cursorColor: kPrimaryColor,
-            // onSaved: (nim) {},
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'NIM harus diisi';
               }
               return null;
+            },
+            onChanged: (value) {
+              if (value.isEmpty) {
+                return;
+              }
+              authController.nim = value;
             },
             decoration: const InputDecoration(
               hintText: "NIM",
@@ -58,6 +60,12 @@ class _SignUpFormState extends State<SignUpForm> {
                 }
                 return null;
               },
+              onChanged: (value) {
+                if (value.isEmpty) {
+                  return;
+                }
+                authController.password = value;
+              },
               decoration: const InputDecoration(
                 hintText: "Password",
                 prefixIcon: Icon(Icons.lock),
@@ -71,39 +79,7 @@ class _SignUpFormState extends State<SignUpForm> {
               if (!validated) {
                 return;
               }
-              try {
-                final result = await _apiService.post('/register_voter/',
-                    data: FormData.fromMap(
-                      {
-                        "nim": nimController.text,
-                        "password": passwordController.text
-                      },
-                    ));
-                if (result.statusCode == 200) {
-                  Get.to(() => BottomNavScreen());
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        result.data['detail'].toString(),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              } catch (e) {
-                print(e);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      e.toString(),
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
+              authController.register();
             },
             child: Text("Sign Up".toUpperCase()),
           ),

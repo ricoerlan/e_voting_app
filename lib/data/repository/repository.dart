@@ -3,43 +3,50 @@ import 'package:e_voting/core/constant.dart';
 import 'package:e_voting/data/api_service/api_service.dart';
 import 'package:e_voting/data/model/candidate_model.dart';
 import 'package:e_voting/data/model/chain_model.dart';
-import 'package:e_voting/data/model/voter_model.dart';
+import 'package:e_voting/data/model/profile_model.dart';
 import 'package:flutter/foundation.dart';
 
 class Repository {
   final ApiService _apiService = ApiService();
 
   // 1. Register Voter
-  Future<VoterModel> registerVoter(
+  Future<ProfileModel> registerVoter(
       {required String nim, required String password}) async {
     try {
-      final result = await _apiService.post(ApiEndPoints.registerVoter,
-          data: FormData.fromMap(
-            {"nim": nim, "password": password},
-          ));
-      return VoterModel.fromJson(result.data['data']);
-      ;
+      final result = await _apiService.post(
+        ApiEndPoints.registerVoter,
+        data: FormData.fromMap(
+          {"nim": nim, "password": password},
+        ),
+      );
+      final data = result.data;
+      if (data['status_code'] != 201) {
+        throw data["detail"];
+      }
+      return ProfileModel.fromJson(data['data']);
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
 
   // 2. Login Voter && Committee
-  Future<VoterModel> login(
+  Future<ProfileModel> login(
       {required String nim,
       required String password,
       bool isCommittee = false}) async {
     try {
       final result = await _apiService.post(
-          isCommittee ? ApiEndPoints.loginCommittee : ApiEndPoints.loginVoter,
-          data: FormData.fromMap(
-            {"nim": nim, "password": password},
-          ));
-      print(result);
-      return VoterModel.fromJson(result.data['data']);
+        isCommittee ? ApiEndPoints.loginCommittee : ApiEndPoints.loginVoter,
+        data: FormData.fromMap(
+          {isCommittee ? "username" : "nim": nim, "password": password},
+        ),
+      );
+      final data = result.data;
+      if (data['status_code'] != 200) {
+        throw data["detail"];
+      }
+      return ProfileModel.fromJson(data['data']);
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -89,29 +96,25 @@ class Repository {
             {"nim": nim, "photo": photo},
           ));
       return CandidateModel.fromJson(result.data['data']);
-      ;
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
 
   // 5. Cast Vote (Voter only)
-  Future<List<ChainModel>> castVote(
-      {required String nim, required String photo}) async {
+  Future<bool> castVote(
+      {required String voterNim, required String candidateNim}) async {
     try {
-      List<ChainModel> chains = [];
       final result = await _apiService.post(ApiEndPoints.castVote,
           data: FormData.fromMap(
-            {"nim": nim, "photo": photo},
+            {"voter_nim": voterNim, "candidate_nim": candidateNim},
           ));
       final data = result.data;
-      if (data['status_code'] == 200) {
-        chains.addAll(chainModelFromJson(data['data']));
+      if (data['status_code'] != 201) {
+        throw data["detail"];
       }
-      return chains;
+      return true;
     } catch (e) {
-      print(e);
       rethrow;
     }
   }

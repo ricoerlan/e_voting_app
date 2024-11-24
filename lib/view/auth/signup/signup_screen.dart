@@ -1,5 +1,3 @@
-import 'package:e_voting/core/constant.dart';
-import 'package:e_voting/core/responsive.dart';
 import 'package:e_voting/view/auth/signup/widget/sign_up_form.dart';
 import 'package:e_voting/view/auth/signup/widget/sign_up_top_image.dart';
 import 'package:e_voting/view/widget/background.dart';
@@ -12,28 +10,7 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Background(
       child: SingleChildScrollView(
-        child: Responsive(
-          mobile: MobileSignupScreen(),
-          desktop: Row(
-            children: [
-              Expanded(
-                child: SignUpScreenTopImage(),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 450,
-                      child: SignUpForm(),
-                    ),
-                    SizedBox(height: defaultPadding / 2),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
+        child: MobileSignupScreen(),
       ),
     );
   }
@@ -60,7 +37,6 @@ class MobileSignupScreen extends StatelessWidget {
             Spacer(),
           ],
         ),
-        // const SocalSignUp()
       ],
     );
   }

@@ -12,57 +12,65 @@ class HomeScreen extends StatelessWidget {
     // Initialize the controller (this will automatically call onInit and initializeData)
     final homeController = Get.put(HomeController());
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Home',
-          style: TextStyle(color: Colors.white),
+    return RefreshIndicator(
+      onRefresh: () {
+        homeController.initializeData();
+        return Future.value();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Home',
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.blueAccent,
         ),
-        backgroundColor: Colors.blueAccent,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Quick Count Section
-            GetBuilder<HomeController>(
-              init: homeController, // Ensure the controller is initialized
-              builder: (controller) {
-                if (controller.isLoading) {
-                  // Display a loading indicator while data is being fetched
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  return _buildQuickCountSection(controller);
-                }
-              },
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: GetBuilder<HomeController>(
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Quick Count Section
+              GetBuilder<HomeController>(
+                init: homeController, // Ensure the controller is initialized
+                initState: (controller) => homeController.initializeData(),
                 builder: (controller) {
                   if (controller.isLoading) {
                     // Display a loading indicator while data is being fetched
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
+                  } else {
+                    return _buildQuickCountSection(controller);
                   }
-                  return ListView.builder(
-                    itemCount: controller.transactions.length,
-                    itemBuilder: (context, index) {
-                      final tx = controller.transactions[index];
-                      return GestureDetector(
-                        onTap: () => _showTransactionDetailsDialog(context, tx),
-                        child: TransactionCard(transaction: tx),
-                      );
-                    },
-                  );
                 },
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Expanded(
+                child: GetBuilder<HomeController>(
+                  builder: (controller) {
+                    if (controller.isLoading) {
+                      // Display a loading indicator while data is being fetched
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return ListView.builder(
+                      itemCount: controller.transactions.length,
+                      itemBuilder: (context, index) {
+                        final tx = controller.transactions[index];
+                        return GestureDetector(
+                          onTap: () =>
+                              _showTransactionDetailsDialog(context, tx),
+                          child: TransactionCard(transaction: tx),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -148,6 +156,10 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text('Block Number: ${tx.blockNumber}'),
+                // const SizedBox(height: 10),
+                // Text('Voter: ${tx.transactions![tx.index!].voter}'),
+                // const SizedBox(height: 10),
+                // Text('Candidate: ${tx.transactions![tx.index!].candidate}'),
                 const SizedBox(height: 10),
                 Text('Status: ${tx.status}'),
                 const SizedBox(height: 10),

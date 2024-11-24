@@ -13,18 +13,19 @@ class MobileLoginScreen extends StatefulWidget {
   });
 
   @override
-  State<MobileLoginScreen> createState() => _MobileLoginScreenState(
-      pageController: pageController, currentIndex: currentIndex);
+  State<MobileLoginScreen> createState() => _MobileLoginScreenState();
 }
 
 class _MobileLoginScreenState extends State<MobileLoginScreen> {
-  PageController pageController;
-  int currentIndex;
+  late PageController pageController;
+  late int currentIndex;
 
-  _MobileLoginScreenState({
-    required this.pageController,
-    required this.currentIndex,
-  });
+  @override
+  void initState() {
+    super.initState();
+    pageController = widget.pageController;
+    currentIndex = widget.currentIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,9 +57,9 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                 currentIndex = index;
               });
             },
-            children: const [
-              LoginForm(role: 'voter'),
-              LoginForm(role: 'committee'),
+            children: [
+              LoginForm(role: 'voter', currentIndex: currentIndex),
+              LoginForm(role: 'committee', currentIndex: currentIndex),
             ],
           ),
         )
@@ -84,13 +85,13 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
           color:
-              currentIndex == index ? Colors.blueAccent : Colors.grey.shade300,
+              currentIndex == index ? Colors.grey.shade300 : Colors.blueAccent,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
               color: currentIndex == index
-                  ? Colors.blue.withOpacity(0.3)
-                  : Colors.transparent,
+                  ? Colors.transparent
+                  : Colors.blue.withOpacity(0.3),
               spreadRadius: 1,
               blurRadius: 5,
             ),
@@ -101,7 +102,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
           children: [
             Icon(
               index == 0 ? Icons.how_to_vote : Icons.group_add,
-              color: currentIndex == index ? Colors.white : Colors.grey,
+              color: currentIndex == index ? Colors.grey : Colors.white,
               size: 18,
             ),
             const SizedBox(width: 8),
@@ -109,7 +110,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
               index == 0 ? 'Login as Voter' : 'Login as Committee',
               style: TextStyle(
                 color:
-                    currentIndex == index ? Colors.white : Colors.grey.shade600,
+                    currentIndex == index ? Colors.grey.shade600 : Colors.white,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),

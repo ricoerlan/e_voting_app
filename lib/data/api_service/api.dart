@@ -18,6 +18,7 @@ class Api {
           receiveTimeout: const Duration(seconds: 45),
           connectTimeout: const Duration(seconds: 250),
           sendTimeout: const Duration(seconds: 45),
+          followRedirects: true,
           validateStatus: (statusCode) {
             return true;
             // if (statusCode == null) {
@@ -32,6 +33,10 @@ class Api {
           },
         ),
       );
+      dio.interceptors
+          .add(InterceptorsWrapper(onError: (DioException e, handler) {
+        return handler.reject(e);
+      }));
       return dio;
     }
   }
