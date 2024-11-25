@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
 
+// HomeScreen adalah layar utama yang menampilkan informasi umum seperti transaksi terbaru dan vote count.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Initialize the controller (this will automatically call onInit and initializeData)
+    // Inisialisasi controller yang akan menangani data dan logika pada layar ini
     final homeController = Get.put(HomeController());
 
     return RefreshIndicator(
       onRefresh: () {
+        // Memanggil fungsi untuk memuat ulang data saat refresh
         homeController.initializeData();
         return Future.value();
       },
@@ -30,17 +32,19 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Quick Count Section
+              // Menampilkan quick vote count section
               GetBuilder<HomeController>(
-                init: homeController, // Ensure the controller is initialized
-                initState: (controller) => homeController.initializeData(),
+                init: homeController, // Pastikan controller diinisialisasi
+                initState: (controller) => homeController
+                    .initializeData(), // Inisialisasi data saat layar pertama kali dimuat
                 builder: (controller) {
                   if (controller.isLoading) {
-                    // Display a loading indicator while data is being fetched
+                    // Menampilkan loading indicator saat data sedang dimuat
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
                   } else {
+                    // Menampilkan bagian quick count jika data telah dimuat
                     return _buildQuickCountSection(controller);
                   }
                 },
@@ -50,15 +54,17 @@ class HomeScreen extends StatelessWidget {
                 child: GetBuilder<HomeController>(
                   builder: (controller) {
                     if (controller.isLoading) {
-                      // Display a loading indicator while data is being fetched
+                      // Menampilkan loading indicator saat data sedang dimuat
                       return const Center(
                         child: CircularProgressIndicator(),
                       );
                     }
+                    // Menampilkan daftar transaksi dengan ListView
                     return ListView.builder(
                       itemCount: controller.transactions.length,
                       itemBuilder: (context, index) {
                         final tx = controller.transactions[index];
+                        // Menampilkan setiap transaksi sebagai card dan memberikan interaksi tap untuk melihat detail
                         return GestureDetector(
                           onTap: () =>
                               _showTransactionDetailsDialog(context, tx),
@@ -76,9 +82,11 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Quick Count UI section
+  // Fungsi untuk membangun bagian Quick Count
   Widget _buildQuickCountSection(HomeController homeController) {
     Set<String> candidateNames = {};
+
+    // Mengumpulkan nama kandidat yang ada dari semua transaksi
     for (var tx in homeController.transactions) {
       if (tx.transactions != null) {
         for (var transaction in tx.transactions!) {
@@ -102,6 +110,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
+        // Menampilkan jumlah vote untuk setiap kandidat
         ...candidateNames.map((candidate) {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -125,7 +134,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Show a dialog with transaction details
+  // Fungsi untuk menampilkan dialog detail transaksi
   void _showTransactionDetailsDialog(BuildContext context, ChainModel tx) {
     showDialog(
       context: context,
@@ -156,10 +165,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text('Block Number: ${tx.blockNumber}'),
-                // const SizedBox(height: 10),
-                // Text('Voter: ${tx.transactions![tx.index!].voter}'),
-                // const SizedBox(height: 10),
-                // Text('Candidate: ${tx.transactions![tx.index!].candidate}'),
+                // Menampilkan status dan waktu transaksi
                 const SizedBox(height: 10),
                 Text('Status: ${tx.status}'),
                 const SizedBox(height: 10),
@@ -171,6 +177,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           actions: [
+            // Tombol OK untuk menutup dialog
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('OK'),
@@ -181,11 +188,13 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  // Format timestamp menjadi format yang lebih mudah dibaca
   String _formatTimestamp(DateTime timestamp) {
     return DateFormat('yyyy-MM-dd HH:mm:ss').format(timestamp);
   }
 }
 
+// Widget untuk menampilkan informasi transaksi dalam bentuk card
 class TransactionCard extends StatelessWidget {
   final ChainModel transaction;
 
@@ -204,6 +213,7 @@ class TransactionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Menampilkan Hash dari transaksi
             Text(
               'Transaction Hash',
               style: TextStyle(
@@ -225,6 +235,7 @@ class TransactionCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // Menampilkan detail block number dan status transaksi
                 _TransactionDetail(
                   label: 'Block Number',
                   value: '${transaction.blockNumber}',
@@ -252,11 +263,13 @@ class TransactionCard extends StatelessWidget {
     );
   }
 
+  // Format timestamp menjadi format yang lebih mudah dibaca
   String _formatTimestamp(DateTime timestamp) {
     return DateFormat('yyyy-MM-dd HH:mm:ss').format(timestamp);
   }
 }
 
+// Widget untuk menampilkan detail transaksi seperti block number dan status
 class _TransactionDetail extends StatelessWidget {
   final String label;
   final String value;

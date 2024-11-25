@@ -3,14 +3,18 @@ import 'package:e_voting/data/model/candidate_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+// VotingScreen: Halaman untuk memilih kandidat yang akan diberikan suara.
 class VotingScreen extends StatelessWidget {
   VotingScreen({super.key});
+
+  // Inisialisasi VotingController menggunakan GetX
   final VotingController votingController = Get.put(VotingController());
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () {
+        // Memanggil fungsi untuk menginisialisasi data ulang saat refresh
         votingController.initializeData();
         return Future.value();
       },
@@ -36,14 +40,17 @@ class VotingScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
+              // GetBuilder untuk manajemen status dan pembaruan UI menggunakan VotingController
               GetBuilder<VotingController>(
                 init: VotingController(),
                 initState: (controller) => votingController.initializeData(),
                 builder: (controller) {
+                  // Jika data masih dalam proses loading, tampilkan indikator loading
                   if (controller.isLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
+                  // Setelah data siap, tampilkan kandidat untuk dipilih
                   return Expanded(
                     child: Column(
                       children: [
@@ -58,6 +65,7 @@ class VotingScreen extends StatelessWidget {
                                 isSelected:
                                     controller.selectedCandidate == candidate,
                                 onTap: () {
+                                  // Panggil fungsi untuk memilih kandidat
                                   controller.selectCandidate(candidate);
                                 },
                               );
@@ -65,7 +73,7 @@ class VotingScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Vote Button
+                        // Tombol untuk memberikan suara
                         _voteButton(),
                       ],
                     ),
@@ -79,7 +87,7 @@ class VotingScreen extends StatelessWidget {
     );
   }
 
-  // Vote Button Widget
+  // Widget untuk tombol memberikan suara
   Widget _voteButton() {
     return GestureDetector(
       onTap: () => votingController.castVote(),
@@ -97,7 +105,7 @@ class VotingScreen extends StatelessWidget {
               color: Colors.black.withOpacity(0.2),
               spreadRadius: 2,
               blurRadius: 6,
-              offset: const Offset(0, 2),
+              offset: const Offset(0, 2), // perubahan posisi bayangan
             ),
           ],
         ),
@@ -125,6 +133,7 @@ class VotingScreen extends StatelessWidget {
   }
 }
 
+// Card untuk menampilkan kandidat yang bisa dipilih
 class CandidateCard extends StatelessWidget {
   final CandidateModel candidate;
   final bool isSelected;
@@ -140,14 +149,17 @@ class CandidateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap, // Mengaktifkan pemilihan kandidat saat card diklik
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 10),
         elevation: 4,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
-            color: isSelected ? Colors.blueAccent : Colors.transparent,
+            color: isSelected
+                ? Colors.blueAccent
+                : Colors
+                    .transparent, // Menambahkan border jika kandidat dipilih
             width: 2,
           ),
         ),
@@ -157,7 +169,9 @@ class CandidateCard extends StatelessWidget {
             children: [
               Icon(
                 isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: isSelected ? Colors.blueAccent : Colors.grey,
+                color: isSelected
+                    ? Colors.blueAccent
+                    : Colors.grey, // Ikon berubah sesuai status terpilih
                 size: 30,
               ),
               const SizedBox(width: 15),
@@ -175,7 +189,9 @@ class CandidateCard extends StatelessWidget {
                   const SizedBox(height: 5),
                   Text(
                     candidate.faculty ?? '',
-                    style: TextStyle(color: Colors.grey[600]),
+                    style: TextStyle(
+                        color:
+                            Colors.grey[600]), // Menampilkan fakultas kandidat
                   ),
                 ],
               ),

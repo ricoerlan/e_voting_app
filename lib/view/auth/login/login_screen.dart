@@ -9,22 +9,26 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final PageController _pageController = PageController();
-  int currentIndex = 1;
+  final PageController _pageController =
+      PageController(); // PageController untuk mengontrol perpindahan halaman.
+  int currentIndex =
+      1; // Menyimpan indeks halaman yang aktif, default adalah halaman committee.
 
-  // Get role based on current page index
+  // Mengambil role berdasarkan indeks halaman yang sedang aktif.
   String get selectedRole => currentIndex == 0 ? 'voter' : 'committee';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
+      extendBodyBehindAppBar: true, // Membuat body meluas di belakang AppBar.
+      extendBody: true, // Membuat body meluas di seluruh layar.
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 120),
+        padding: const EdgeInsets.only(
+            top:
+                120), // Menambahkan padding atas agar tidak tertutup oleh AppBar.
         child: MobileLoginScreen(
-          pageController: _pageController,
-          currentIndex: currentIndex,
+          pageController: _pageController, // Memberikan kontrol untuk halaman.
+          currentIndex: currentIndex, // Memberikan nilai indeks halaman aktif.
         ),
       ),
     );

@@ -1,12 +1,13 @@
 import 'package:get/get.dart';
 
 class BottomNavController extends GetxController {
-  // Variable to track the current selected tab
-  int selectedIndex = 0;
+  int selectedIndex =
+      0; // Variabel untuk menyimpan indeks tab yang dipilih. Secara default, tab pertama (indeks 0) yang dipilih.
 
-  // Function to change tab and update the state
+  // Fungsi untuk mengganti indeks tab yang dipilih
   void changeTabIndex(int index) {
-    selectedIndex = index;
-    update(); // Call update to rebuild the widget
+    selectedIndex =
+        index; // Mengubah nilai selectedIndex dengan indeks yang diberikan sebagai parameter.
+    update(); // Memperbarui UI untuk refleksi perubahan status selectedIndex.
   }
 }

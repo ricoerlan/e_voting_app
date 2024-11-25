@@ -10,44 +10,63 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class AuthController extends GetxController {
-  final _repository = Repository();
-  final _sharedPrefRepository = SharedPrefRepository();
-  bool isLoading = false;
-  String nim = "";
-  String password = "";
-  bool isCommittee = false;
+  final _repository =
+      Repository(); // Membuat instance dari Repository untuk melakukan panggilan API.
+  final _sharedPrefRepository =
+      SharedPrefRepository(); // Membuat instance dari SharedPrefRepository untuk mengelola data SharedPreferences.
+  bool isLoading =
+      false; // Variabel status untuk menandakan apakah aplikasi sedang dalam proses loading.
+  String nim = ""; // Menyimpan NIM (Nomor Induk Mahasiswa) atau ID pengguna.
+  String password = ""; // Menyimpan kata sandi pengguna.
+  bool isCommittee =
+      false; // Menyimpan status apakah pengguna adalah bagian dari komite.
 
+  // Fungsi untuk menangani proses login
   void login(bool value) async {
-    isLoading = true;
-    update();
+    isLoading =
+        true; // Mengatur status loading menjadi true ketika proses login dimulai.
+    update(); // Memperbarui UI untuk menyesuaikan status loading yang berubah.
     try {
       final data = await _repository.login(
-          nim: nim, password: password, isCommittee: value);
+          nim: nim,
+          password: password,
+          isCommittee:
+              value); // Melakukan panggilan API untuk login dengan NIM dan password.
       if (data.id != null) {
-        await setCurrentProfile(data: data);
-        isCommittee = data.isCommittee ?? false;
+        // Jika login berhasil (ID pengguna tidak null), lanjutkan dengan menyimpan data profil.
+        await setCurrentProfile(
+            data: data); // Menyimpan profil pengguna di SharedPreferences.
+        isCommittee = data.isCommittee ??
+            false; // Menyimpan status komite (jika ada) dari data yang diterima.
       }
     } catch (e) {
+      // Jika terjadi kesalahan, tampilkan Snackbar dengan pesan error.
       Get.showSnackbar(GetSnackBar(
         title: 'error',
         message: e.toString(),
       ));
       if (kDebugMode) {
-        print(e);
+        print(e); // Cetak error ke konsol jika dalam mode debug.
       }
     } finally {
-      isLoading = false;
-      update();
+      isLoading =
+          false; // Mengatur status loading menjadi false setelah proses login selesai.
+      update(); // Memperbarui UI untuk refleksi status loading yang berubah.
     }
   }
 
+  // Fungsi untuk menyimpan data profil pengguna saat ini di SharedPreferences
   Future<void> setCurrentProfile({required ProfileModel data}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final result = await prefs.setString('profile', json.encode(data.toJson()));
+    SharedPreferences prefs = await SharedPreferences
+        .getInstance(); // Mendapatkan instance SharedPreferences.
+    final result = await prefs.setString('profile',
+        json.encode(data.toJson())); // Menyimpan data profil dalam format JSON.
 
     if (result) {
+      // Jika penyimpanan berhasil, arahkan pengguna ke halaman BottomNavScreen.
       Get.offAll(() => const BottomNavScreen());
     } else {
+      // Jika penyimpanan gagal, tampilkan Snackbar dengan pesan error.
       Get.showSnackbar(const GetSnackBar(
         title: 'error',
         message: 'error saving profile data',
@@ -55,52 +74,64 @@ class AuthController extends GetxController {
     }
   }
 
-  // Save registration info and biometrics preference
+  // Fungsi untuk menangani proses registrasi pengguna
   void register() async {
-    isLoading = true;
-    update();
+    isLoading =
+        true; // Mengatur status loading menjadi true saat registrasi dimulai.
+    update(); // Memperbarui UI untuk menyesuaikan status loading yang berubah.
     try {
-      final data =
-          await _repository.registerVoter(nim: nim, password: password);
+      final data = await _repository.registerVoter(
+          nim: nim,
+          password:
+              password); // Melakukan panggilan API untuk registrasi pengguna.
       if (data.id != null) {
+        // Jika registrasi berhasil, simpan data profil dan status komite.
         await setCurrentProfile(data: data);
         isCommittee = data.isCommittee ?? false;
       }
     } catch (e) {
+      // Jika terjadi kesalahan, tampilkan Snackbar dengan pesan error.
       Get.showSnackbar(GetSnackBar(
         title: 'error',
         message: e.toString(),
       ));
       if (kDebugMode) {
-        print(e);
+        print(e); // Cetak error ke konsol jika dalam mode debug.
       }
     } finally {
-      isLoading = false;
-      update();
+      isLoading =
+          false; // Mengatur status loading menjadi false setelah proses registrasi selesai.
+      update(); // Memperbarui UI untuk refleksi status loading yang berubah.
     }
   }
 
-  // Log out and clear user data from SharedPreferences
+  // Fungsi untuk menangani proses logout dan membersihkan data pengguna
   void logout() async {
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.clear(); // Clear all stored data
-      isCommittee = false;
+      SharedPreferences prefs = await SharedPreferences
+          .getInstance(); // Mendapatkan instance SharedPreferences.
+      await prefs
+          .clear(); // Menghapus seluruh data yang disimpan di SharedPreferences.
+      isCommittee =
+          false; // Mengatur status komite menjadi false setelah logout.
       Get.dialog(
         AlertDialog(
-          title: const Text('Success'),
+          title: const Text(
+              'Success'), // Menampilkan dialog sukses setelah logout berhasil.
           content: const Text(
             'Logged out successfully',
           ),
           actions: [
             TextButton(
-              onPressed: () => Get.back(),
+              onPressed: () =>
+                  Get.back(), // Menutup dialog jika tombol OK ditekan.
               child: const Text('OK'),
             ),
           ],
         ),
       );
     } catch (e) {
+      // Jika logout gagal, tampilkan dialog dengan pesan gagal.
       Get.dialog(
         AlertDialog(
           title: const Text('Failed'),
@@ -109,25 +140,32 @@ class AuthController extends GetxController {
           ),
           actions: [
             TextButton(
-              onPressed: () => Get.back(),
+              onPressed: () =>
+                  Get.back(), // Menutup dialog jika tombol OK ditekan.
               child: const Text('OK'),
             ),
           ],
         ),
       );
     } finally {
-      update();
-      Get.offAll(() => const LoginScreen());
+      update(); // Memperbarui UI setelah proses logout selesai.
+      Get.offAll(() =>
+          const LoginScreen()); // Arahkan pengguna ke halaman login setelah logout.
     }
   }
 
+  // Fungsi untuk memeriksa apakah pengguna sudah login sebelumnya
   Future<bool> checkIsLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences
+        .getInstance(); // Mendapatkan instance SharedPreferences.
     if (!prefs.containsKey('profile')) {
-      return false;
+      // Memeriksa apakah data profil ada di SharedPreferences.
+      return false; // Jika tidak ada data profil, kembalikan false, artinya pengguna belum login.
     }
-    final profile = await _sharedPrefRepository.getProfileData();
-    isCommittee = profile.isCommittee ?? false;
-    return true;
+    final profile = await _sharedPrefRepository
+        .getProfileData(); // Mengambil data profil pengguna dari SharedPreferences.
+    isCommittee = profile.isCommittee ??
+        false; // Menyimpan status komite pengguna dari data profil.
+    return true; // Jika data profil ada, artinya pengguna sudah login, kembalikan true.
   }
 }

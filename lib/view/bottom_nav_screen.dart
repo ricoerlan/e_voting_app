@@ -13,47 +13,58 @@ class BottomNavScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<AuthController>(builder: (authController) {
-      return Scaffold(
-        body: GetBuilder<BottomNavController>(
-          init: BottomNavController(),
-          builder: (controller) {
-            return [
-              const HomeScreen(),
-              authController.isCommittee ? CandidateScreen() : VotingScreen(),
-              ProfileScreen(),
-            ][controller.selectedIndex];
-          },
-        ),
-        bottomNavigationBar: GetBuilder<BottomNavController>(
-          builder: (controller) {
-            print("authController.isCommittee ${authController.isCommittee}");
-            return BottomNavigationBar(
-              currentIndex: controller.selectedIndex,
-              onTap: controller.changeTabIndex,
-              items: [
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined),
-                  label: 'Home',
-                ),
+    return GetBuilder<AuthController>(
+      // Menggunakan GetBuilder untuk mendengarkan perubahan pada AuthController
+      builder: (authController) {
+        return Scaffold(
+          // Body menggunakan GetBuilder lagi untuk mendengarkan perubahan pada BottomNavController
+          body: GetBuilder<BottomNavController>(
+            init: BottomNavController(), // Inisialisasi BottomNavController
+            builder: (controller) {
+              // Berdasarkan nilai controller.selectedIndex, menampilkan screen yang sesuai
+              return [
+                const HomeScreen(), // Halaman Home
                 authController.isCommittee
-                    ? const BottomNavigationBarItem(
-                        icon: Icon(Icons.groups_3_outlined),
-                        label: 'Candidate',
-                      )
-                    : const BottomNavigationBarItem(
-                        icon: Icon(Icons.how_to_vote_outlined),
-                        label: 'Voting',
-                      ),
-                const BottomNavigationBarItem(
-                  icon: Icon(Icons.person_outline),
-                  label: 'Profile',
-                ),
-              ],
-            );
-          },
-        ),
-      );
-    });
+                    ? const CandidateScreen() // Jika pengguna adalah Committee, tampilkan CandidateScreen
+                    : VotingScreen(), // Jika bukan Committee, tampilkan VotingScreen
+                ProfileScreen(), // Halaman Profile
+              ][controller
+                  .selectedIndex]; // Menampilkan layar sesuai dengan selectedIndex
+            },
+          ),
+          // BottomNavigationBar untuk navigasi antara tab
+          bottomNavigationBar: GetBuilder<BottomNavController>(
+            builder: (controller) {
+              return BottomNavigationBar(
+                currentIndex: controller
+                    .selectedIndex, // Menentukan index tab yang dipilih
+                onTap: controller.changeTabIndex, // Fungsi untuk mengganti tab
+                items: [
+                  const BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined), // Ikon untuk tab Home
+                    label: 'Home', // Label untuk tab Home
+                  ),
+                  authController.isCommittee
+                      ? const BottomNavigationBarItem(
+                          icon: Icon(Icons
+                              .groups_3_outlined), // Ikon untuk tab Candidate (untuk Committee)
+                          label: 'Candidate', // Label untuk tab Candidate
+                        )
+                      : const BottomNavigationBarItem(
+                          icon: Icon(Icons
+                              .how_to_vote_outlined), // Ikon untuk tab Voting (untuk Voter)
+                          label: 'Voting', // Label untuk tab Voting
+                        ),
+                  const BottomNavigationBarItem(
+                    icon: Icon(Icons.person_outline), // Ikon untuk tab Profile
+                    label: 'Profile', // Label untuk tab Profile
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }
