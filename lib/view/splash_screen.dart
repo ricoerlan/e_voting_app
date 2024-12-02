@@ -1,4 +1,4 @@
-import 'package:e_voting/controller/auth_controller.dart';
+import 'package:e_voting/controller/profile_controller.dart';
 import 'package:e_voting/view/auth/login/login_screen.dart';
 import 'package:e_voting/view/bottom_nav_screen.dart';
 import 'package:flutter/material.dart';
@@ -14,13 +14,13 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  // Menginisialisasi AuthController yang dikelola menggunakan GetX
-  final authController = Get.put(AuthController());
+  // Menginisialisasi ProfileController yang dikelola menggunakan GetX
+  final profileController = Get.put(ProfileController());
 
   // Fungsi untuk memeriksa apakah pengguna sudah login atau belum
   void _checkIsLoggedIn() async {
     // Memanggil metode untuk memeriksa status login
-    final isLoggedIn = await authController.checkIsLoggedIn();
+    final isLoggedIn = await profileController.checkIsLoggedIn();
 
     // Berdasarkan status login, arahkan pengguna ke halaman yang sesuai
     if (isLoggedIn) {

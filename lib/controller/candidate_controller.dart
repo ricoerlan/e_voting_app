@@ -93,9 +93,10 @@ class CandidateController extends GetxController {
         ),
       );
     } finally {
-      isLoading =
-          false; // Mengatur status loading menjadi false setelah proses menambahkan kandidat selesai.
-      update(); // Memperbarui UI untuk refleksi status loading yang berubah.
+      initializeData();
+      // isLoading =
+      //     false; // Mengatur status loading menjadi false setelah proses menambahkan kandidat selesai.
+      // update(); // Memperbarui UI untuk refleksi status loading yang berubah.
     }
   }
 }

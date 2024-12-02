@@ -1,3 +1,4 @@
+import 'package:e_voting/controller/profile_controller.dart';
 import 'package:e_voting/data/model/candidate_model.dart';
 import 'package:e_voting/data/repository/repository.dart';
 import 'package:flutter/foundation.dart';
@@ -57,8 +58,9 @@ class VotingController extends GetxController {
       update(); // Memperbarui UI untuk menunjukkan status loading.
       try {
         // Memanggil API untuk memberikan suara dengan menggunakan NIM pemilih dan NIM kandidat.
-        final result =
-            await _repository.castVote(voterNim: '1', candidateNim: '1');
+        final result = await _repository.castVote(
+            voterNim: Get.find<ProfileController>().profileModel.nim!,
+            candidateNim: selectedCandidate!.nim!);
         if (!result) {
           throw 'Something is wrong, please try again'; // Jika API gagal, lempar exception.
         }

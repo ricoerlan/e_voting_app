@@ -17,7 +17,7 @@ class ProfileModel {
   final String? name; // Nama pengguna (nullable)
   final String? email; // Email pengguna (nullable)
   final String? faculty; // Fakultas pengguna (nullable)
-  final bool?
+  final bool
       isCommittee; // Status apakah pengguna adalah anggota komite (nullable)
 
   // Konstruktor untuk membuat objek ProfileModel dengan parameter opsional (nullable).
@@ -27,7 +27,7 @@ class ProfileModel {
     this.name,
     this.email,
     this.faculty,
-    this.isCommittee,
+    this.isCommittee = false,
   });
 
   // Metode copyWith untuk membuat salinan objek dengan perubahan properti tertentu.
@@ -62,8 +62,8 @@ class ProfileModel {
         name: json["name"], // Mengambil nilai "name" dari JSON
         email: json["email"], // Mengambil nilai "email" dari JSON
         faculty: json["faculty"], // Mengambil nilai "faculty" dari JSON
-        isCommittee:
-            json["is_committee"], // Mengambil nilai "is_committee" dari JSON
+        isCommittee: json["is_committee"] ??
+            false, // Mengambil nilai "is_committee" dari JSON
       );
 
   // Metode toJson untuk mengonversi objek ProfileModel ke dalam Map JSON.

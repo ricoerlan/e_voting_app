@@ -12,11 +12,9 @@ dependencies:
   get: ^4.6.6 # Menggunakan GetX versi 4.6.6 untuk manajemen state dan routing
   cupertino_icons: ^1.0.6 # Ikon untuk aplikasi iOS (Cupertino-style)
   dio: ^5.7.0 # Paket untuk melakukan HTTP request dengan lebih mudah dan efisien
-  dot_navigation_bar: ^1.0.2 # Paket untuk membuat bottom navigation bar dengan desain modern
   flutter_svg: ^2.0.11 # Paket untuk menampilkan file SVG dalam aplikasi Flutter
   intl: any # Paket internasionalisasi (intl) untuk mendukung format tanggal, waktu, dan angka
   image_picker: ^1.1.2 # Paket untuk memilih gambar dari galeri atau kamera
-  local_auth: ^2.3.0 # Paket untuk otentikasi biometrik seperti sidik jari atau pengenalan wajah
   shared_preferences: ^2.3.2 # Untuk menyimpan data secara lokal di perangkat
 
 dev_dependencies:

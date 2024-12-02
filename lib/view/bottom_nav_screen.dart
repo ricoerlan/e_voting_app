@@ -1,4 +1,4 @@
-import 'package:e_voting/controller/auth_controller.dart';
+import 'package:e_voting/controller/profile_controller.dart';
 import 'package:e_voting/view/candidate_screen.dart';
 import 'package:e_voting/view/home_screen.dart';
 import 'package:e_voting/view/voting_screen.dart';
@@ -13,9 +13,9 @@ class BottomNavScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<AuthController>(
-      // Menggunakan GetBuilder untuk mendengarkan perubahan pada AuthController
-      builder: (authController) {
+    return GetBuilder<ProfileController>(
+      // Menggunakan GetBuilder untuk mendengarkan perubahan pada ProfileController
+      builder: (profileController) {
         return Scaffold(
           // Body menggunakan GetBuilder lagi untuk mendengarkan perubahan pada BottomNavController
           body: GetBuilder<BottomNavController>(
@@ -24,9 +24,9 @@ class BottomNavScreen extends StatelessWidget {
               // Berdasarkan nilai controller.selectedIndex, menampilkan screen yang sesuai
               return [
                 const HomeScreen(), // Halaman Home
-                authController.isCommittee
+                profileController.profileModel.isCommittee
                     ? const CandidateScreen() // Jika pengguna adalah Committee, tampilkan CandidateScreen
-                    : VotingScreen(), // Jika bukan Committee, tampilkan VotingScreen
+                    : const VotingScreen(), // Jika bukan Committee, tampilkan VotingScreen
                 ProfileScreen(), // Halaman Profile
               ][controller
                   .selectedIndex]; // Menampilkan layar sesuai dengan selectedIndex
@@ -44,7 +44,7 @@ class BottomNavScreen extends StatelessWidget {
                     icon: Icon(Icons.home_outlined), // Ikon untuk tab Home
                     label: 'Home', // Label untuk tab Home
                   ),
-                  authController.isCommittee
+                  profileController.profileModel.isCommittee
                       ? const BottomNavigationBarItem(
                           icon: Icon(Icons
                               .groups_3_outlined), // Ikon untuk tab Candidate (untuk Committee)

@@ -21,7 +21,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   // Mengambil instance AuthController menggunakan Get.find(), agar dapat mengakses fungsi login
-  final authController = Get.find<AuthController>();
+  final authController = Get.put(AuthController());
 
   // Mengontrol input NIM atau Username
   final TextEditingController nimController = TextEditingController();

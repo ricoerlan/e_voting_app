@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:e_voting/controller/candidate_controller.dart';
 import 'package:e_voting/core/constant.dart';
 import 'package:e_voting/data/model/candidate_model.dart';
+import 'package:e_voting/view/widget/image_preview_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +27,7 @@ class _CandidateScreenState extends State<CandidateScreen> {
   final TextEditingController nimController = TextEditingController();
   // Variabel untuk menyimpan gambar yang dipilih
   XFile? image;
+  String? _previewImage;
 
   @override
   Widget build(BuildContext context) {
@@ -40,53 +43,91 @@ class _CandidateScreenState extends State<CandidateScreen> {
           title: const Text('Candidate', style: TextStyle(color: Colors.white)),
           backgroundColor: Colors.blueAccent,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        body: SafeArea(
+          child: Stack(
             children: [
-              // Judul untuk daftar kandidat
-              const Text(
-                'Candidate List',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent),
-              ),
-              const SizedBox(height: 20),
-              // GetBuilder digunakan untuk mendengarkan pembaruan dari CandidateController
-              GetBuilder<CandidateController>(
-                init: CandidateController(),
-                initState: (controller) => candidateController
-                    .initializeData(), // Memuat data saat inisialisasi
-                builder: (controller) {
-                  if (controller.isLoading) {
-                    // Menampilkan CircularProgressIndicator jika data masih dimuat
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return Expanded(
-                    child: Column(
-                      children: [
-                        // Daftar kandidat ditampilkan dengan ListView
-                        Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: controller.candidates.length,
-                            itemBuilder: (context, index) {
-                              final candidate = controller.candidates[index];
-                              // Menampilkan card untuk setiap kandidat
-                              return CandidateCard(candidate: candidate);
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Tombol untuk menambahkan kandidat
-                        _addCandidateButton(),
-                      ],
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Judul untuk daftar kandidat
+                    const Text(
+                      'Candidate List',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent),
                     ),
-                  );
-                },
+                    const SizedBox(height: 20),
+                    // GetBuilder digunakan untuk mendengarkan pembaruan dari CandidateController
+                    GetBuilder<CandidateController>(
+                      init: CandidateController(),
+                      initState: (controller) => candidateController
+                          .initializeData(), // Memuat data saat inisialisasi
+                      builder: (controller) {
+                        if (controller.isLoading) {
+                          // Menampilkan CircularProgressIndicator jika data masih dimuat
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        return Expanded(
+                          child: Column(
+                            children: [
+                              // Daftar kandidat ditampilkan dengan ListView
+                              Expanded(
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: controller.candidates.length,
+                                  itemBuilder: (context, index) {
+                                    final candidate =
+                                        controller.candidates[index];
+                                    // Menampilkan card untuk setiap kandidat
+                                    return CandidateCard(
+                                      candidate: candidate,
+                                      onLongPressStart: (v) {
+                                        if (candidate.photo != null &&
+                                            candidate.photo != "") {
+                                          _previewImage =
+                                              '$baseUrl/${candidate.photo!}';
+                                          setState(() {});
+                                        }
+                                      },
+                                      onLongPressEnd: (v) {
+                                        _previewImage = null;
+                                        setState(() {});
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              // Tombol untuk menambahkan kandidat
+                              _addCandidateButton(),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
+              if (_previewImage != null) ...[
+                BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: 2.0,
+                    sigmaY: 2.0,
+                  ),
+                  child: Container(
+                    color: Colors.black.withOpacity(0.6),
+                  ),
+                ),
+                Align(
+                    alignment: Alignment.center,
+                    child: ImagePreviewWidget(
+                      imageUrl: _previewImage,
+                    )),
+              ],
             ],
           ),
         ),
@@ -237,61 +278,69 @@ class _CandidateScreenState extends State<CandidateScreen> {
 // Widget untuk menampilkan informasi kandidat dalam bentuk card
 class CandidateCard extends StatelessWidget {
   final CandidateModel candidate;
+  final Function(LongPressStartDetails) onLongPressStart;
+  final Function(LongPressEndDetails) onLongPressEnd;
 
   const CandidateCard({
     super.key,
     required this.candidate,
+    required this.onLongPressStart,
+    required this.onLongPressEnd,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(
-          color: Colors.blueAccent,
-          width: 2,
+    return GestureDetector(
+      onLongPressStart: onLongPressStart,
+      onLongPressEnd: onLongPressEnd,
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(
+            color: Colors.blueAccent,
+            width: 2,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Menampilkan informasi nama dan fakultas kandidat
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  candidate.name ?? '',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Menampilkan informasi nama dan fakultas kandidat
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    candidate.name ?? '',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  candidate.faculty ?? '',
-                  style: TextStyle(color: Colors.grey[600], fontSize: 22),
-                ),
-              ],
-            ),
-            // Menampilkan foto kandidat jika ada
-            if (candidate.photo != null)
-              Image.network(
-                '$baseUrl/${candidate.photo!}',
-                height: 60,
-                width: 80,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.person_outline,
-                  size: 60,
-                ),
-              )
-          ],
+                  const SizedBox(height: 5),
+                  Text(
+                    candidate.faculty ?? '',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 22),
+                  ),
+                ],
+              ),
+              // Menampilkan foto kandidat jika ada
+              if (candidate.photo != null)
+                Image.network(
+                  '$baseUrl/${candidate.photo!}',
+                  height: 60,
+                  width: 60,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.person_outline,
+                    size: 60,
+                  ),
+                )
+            ],
+          ),
         ),
       ),
     );

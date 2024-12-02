@@ -153,4 +153,35 @@ class Repository {
       rethrow; // Mengulang error jika terjadi kesalahan.
     }
   }
+
+  // 7. Change Password
+  // Fungsi untuk melakukan pemungutan suara oleh pemilih.
+  Future<bool> changePassword(
+      {required String nim,
+      required String oldPassword,
+      required String newPassword,
+      bool isCommittee = false}) async {
+    try {
+      final result = await _apiService.post(
+        isCommittee
+            ? ApiEndPoints.changePasswordCommittee
+            : ApiEndPoints.changePasswordVoter, // Pilih endpoint sesuai role.
+        data: FormData.fromMap(
+          {
+            "nim": nim,
+            "old_password": oldPassword,
+            "new_password": newPassword
+          }, // Menyesuaikan parameter untuk login.
+        ),
+      );
+      final data = result.data; // Mendapatkan respons dari server.
+      if (data['status_code'] != 200) {
+        throw data[
+            "detail"]; // Jika status code bukan 200, anggap sebagai error.
+      }
+      return true;
+    } catch (e) {
+      rethrow; // Mengulang error jika terjadi kesalahan.
+    }
+  }
 }

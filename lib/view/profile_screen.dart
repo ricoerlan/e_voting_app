@@ -1,12 +1,13 @@
 import 'package:e_voting/controller/auth_controller.dart';
 import 'package:e_voting/controller/profile_controller.dart';
+import 'package:e_voting/view/change_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 // Layar ProfileScreen yang menampilkan data profil pengguna dan memungkinkan untuk melakukan logout.
 class ProfileScreen extends StatelessWidget {
   // Menginisialisasi controller untuk mengelola state dan logika profil.
-  final ProfileController profileController = Get.put(ProfileController());
+  final ProfileController profileController = Get.find<ProfileController>();
 
   ProfileScreen({super.key});
 
@@ -21,10 +22,10 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: Colors.blueAccent, // Warna latar belakang app bar
       ),
       body: GetBuilder<ProfileController>(
-        // Menggunakan GetBuilder untuk memantau perubahan state dari controller
-        init: ProfileController(), // Inisialisasi controller jika belum ada
-        initState: (controller) => profileController
-            .initializeData(), // Memanggil fungsi untuk memulai pengambilan data profil
+        initState: (controller) => Future.delayed(
+            const Duration(seconds: 1),
+            () => profileController
+                .initializeData()), // Memanggil fungsi untuk memulai pengambilan data profil
         builder: (controller) {
           // Jika data sedang dimuat, tampilkan loading indicator
           if (controller.isLoading) {
@@ -50,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 // Menampilkan NIM jika pengguna bukan anggota komite
-                if (!controller.profileModel.isCommittee!)
+                if (!controller.profileModel.isCommittee)
                   const Text(
                     'NIM:',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -63,7 +64,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 // Menampilkan email jika pengguna bukan anggota komite
-                if (!controller.profileModel.isCommittee!)
+                if (!controller.profileModel.isCommittee)
                   const Text(
                     'Email:',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -76,7 +77,7 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 // Menampilkan fakultas jika pengguna bukan anggota komite
-                if (!controller.profileModel.isCommittee!)
+                if (!controller.profileModel.isCommittee)
                   const Text(
                     'Faculty:',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -87,6 +88,9 @@ class ProfileScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 16, color: Colors.black),
                 ),
                 const Spacer(),
+                // Tombol untuk ganti password
+                _changePasswordButton(context),
+                const SizedBox(height: 12),
                 // Tombol untuk logout
                 _logoutButton(context),
               ],
@@ -97,32 +101,48 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  // Fungsi untuk mengonfirmasi dan melakukan logout
-  void _logout(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Confirm Logout'),
-          content: const Text('Are you sure you want to log out?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Jika pengguna mengonfirmasi logout, maka akan memanggil logout dari AuthController
-                Get.back(); // Menutup dialog
-                Get.find<AuthController>().logout(); // Logout dari aplikasi
-              },
-              child: const Text('Yes'),
-            ),
-            TextButton(
-              onPressed: () {
-                Get.back(); // Menutup dialog tanpa logout
-              },
-              child: const Text('No'),
+  // Widget untuk menampilkan tombol ganti password yang memiliki tampilan menarik
+  Widget _changePasswordButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Get.to(() => ChangePasswordScreen()),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Colors.orange, Colors.orangeAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 2,
+              blurRadius: 6,
+              offset: const Offset(0, 2), // Posisi shadow pada tombol
             ),
           ],
-        );
-      },
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.lock_outlined, // Ikon logout
+              color: Colors.white,
+              size: 28,
+            ),
+            SizedBox(width: 10),
+            Text(
+              'Change Password',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -169,6 +189,35 @@ class ProfileScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // Fungsi untuk mengonfirmasi dan melakukan logout
+  void _logout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const Text('Are you sure you want to log out?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Jika pengguna mengonfirmasi logout, maka akan memanggil logout dari AuthController
+                Get.back(); // Menutup dialog
+                Get.put(AuthController()).logout(); // Logout dari aplikasi
+              },
+              child: const Text('Yes'),
+            ),
+            TextButton(
+              onPressed: () {
+                Get.back(); // Menutup dialog tanpa logout
+              },
+              child: const Text('No'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -14,4 +14,19 @@ class SharedPrefRepository {
       rethrow; // Jika terjadi error, error tersebut akan diteruskan.
     }
   }
+
+  // Fungsi untuk memerika apakah ada data profil dari SharedPreferences.
+  Future<bool> checkIsLoggedIn() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences
+          .getInstance(); // Mendapatkan instance SharedPreferences.
+      if (!prefs.containsKey('profile')) {
+        // Memeriksa apakah data profil ada di SharedPreferences.
+        return false; // Jika tidak ada data profil, kembalikan false, artinya pengguna belum login.
+      }
+      return true; // Jika data profil ada, artinya pengguna sudah login, kembalikan true.
+    } catch (e) {
+      return false;
+    }
+  }
 }

@@ -1,6 +1,5 @@
 import 'package:e_voting/data/model/profile_model.dart';
 import 'package:e_voting/data/repository/repository.dart';
-import 'package:e_voting/data/repository/shared_pref_repository.dart';
 import 'package:e_voting/view/auth/login/login_screen.dart';
 import 'package:e_voting/view/bottom_nav_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -12,8 +11,7 @@ import 'dart:convert';
 class AuthController extends GetxController {
   final _repository =
       Repository(); // Membuat instance dari Repository untuk melakukan panggilan API.
-  final _sharedPrefRepository =
-      SharedPrefRepository(); // Membuat instance dari SharedPrefRepository untuk mengelola data SharedPreferences.
+// Membuat instance dari SharedPrefRepository untuk mengelola data SharedPreferences.
   bool isLoading =
       false; // Variabel status untuk menandakan apakah aplikasi sedang dalam proses loading.
   String nim = ""; // Menyimpan NIM (Nomor Induk Mahasiswa) atau ID pengguna.
@@ -36,14 +34,15 @@ class AuthController extends GetxController {
         // Jika login berhasil (ID pengguna tidak null), lanjutkan dengan menyimpan data profil.
         await setCurrentProfile(
             data: data); // Menyimpan profil pengguna di SharedPreferences.
-        isCommittee = data.isCommittee ??
-            false; // Menyimpan status komite (jika ada) dari data yang diterima.
+        isCommittee = data
+            .isCommittee; // Menyimpan status komite (jika ada) dari data yang diterima.
       }
     } catch (e) {
       // Jika terjadi kesalahan, tampilkan Snackbar dengan pesan error.
       Get.showSnackbar(GetSnackBar(
         title: 'error',
         message: e.toString(),
+        duration: const Duration(milliseconds: 1500),
       ));
       if (kDebugMode) {
         print(e); // Cetak error ke konsol jika dalam mode debug.
@@ -70,6 +69,7 @@ class AuthController extends GetxController {
       Get.showSnackbar(const GetSnackBar(
         title: 'error',
         message: 'error saving profile data',
+        duration: Duration(milliseconds: 1500),
       ));
     }
   }
@@ -87,13 +87,14 @@ class AuthController extends GetxController {
       if (data.id != null) {
         // Jika registrasi berhasil, simpan data profil dan status komite.
         await setCurrentProfile(data: data);
-        isCommittee = data.isCommittee ?? false;
+        isCommittee = data.isCommittee;
       }
     } catch (e) {
       // Jika terjadi kesalahan, tampilkan Snackbar dengan pesan error.
       Get.showSnackbar(GetSnackBar(
         title: 'error',
         message: e.toString(),
+        duration: const Duration(milliseconds: 1500),
       ));
       if (kDebugMode) {
         print(e); // Cetak error ke konsol jika dalam mode debug.
@@ -152,20 +153,5 @@ class AuthController extends GetxController {
       Get.offAll(() =>
           const LoginScreen()); // Arahkan pengguna ke halaman login setelah logout.
     }
-  }
-
-  // Fungsi untuk memeriksa apakah pengguna sudah login sebelumnya
-  Future<bool> checkIsLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences
-        .getInstance(); // Mendapatkan instance SharedPreferences.
-    if (!prefs.containsKey('profile')) {
-      // Memeriksa apakah data profil ada di SharedPreferences.
-      return false; // Jika tidak ada data profil, kembalikan false, artinya pengguna belum login.
-    }
-    final profile = await _sharedPrefRepository
-        .getProfileData(); // Mengambil data profil pengguna dari SharedPreferences.
-    isCommittee = profile.isCommittee ??
-        false; // Menyimpan status komite pengguna dari data profil.
-    return true; // Jika data profil ada, artinya pengguna sudah login, kembalikan true.
   }
 }

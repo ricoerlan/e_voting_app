@@ -101,7 +101,7 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
         margin: const EdgeInsets.symmetric(
             horizontal: 10), // Memberi jarak antar indikator
         padding: const EdgeInsets.symmetric(
-            horizontal: 20, vertical: 12), // Padding dalam indikator
+            horizontal: 12, vertical: 12), // Padding dalam indikator
         decoration: BoxDecoration(
           color: currentIndex == index
               ? Colors.grey.shade300
