@@ -12,7 +12,7 @@ class Repository {
 
   // 1. Register Voter
   // Fungsi ini digunakan untuk mendaftarkan pemilih baru dengan mengirimkan NIM dan password.
-  Future<ProfileModel> registerVoter(
+  Future<String> registerVoter(
       {required String nim, required String password}) async {
     try {
       final result = await _apiService.post(
@@ -27,8 +27,8 @@ class Repository {
         throw data[
             "detail"]; // Jika status code bukan 201, anggap sebagai error.
       }
-      return ProfileModel.fromJson(
-          data['data']); // Mengembalikan data profil pemilih.
+      return data[
+          'data']; // Mengembalikan nilai true jika suara berhasil dikirim.
     } catch (e) {
       rethrow; // Mengulang error jika terjadi kesalahan.
     }
@@ -180,6 +180,46 @@ class Repository {
             "detail"]; // Jika status code bukan 200, anggap sebagai error.
       }
       return true;
+    } catch (e) {
+      rethrow; // Mengulang error jika terjadi kesalahan.
+    }
+  }
+
+  // 7. Send Email Verification
+  // Fungsi untuk melakukan pemungutan suara oleh pemilih.
+  Future<bool> sendEmailVerification({required String email}) async {
+    try {
+      final result = await _apiService.post(ApiEndPoints.sendEmailVerification,
+          data: FormData.fromMap(
+            {
+              "email": email,
+            }, // email pendaftar.
+          ));
+      return true; // Mengembalikan nilai true jika suara berhasil dikirim.
+    } catch (e) {
+      rethrow; // Mengulang error jika terjadi kesalahan.
+    }
+  }
+
+  // 8. Verify Email OTP
+  // Fungsi untuk melakukan verifikasi otp dari email
+  Future<ProfileModel> verifyEmailOTP(
+      {required String email, required String token}) async {
+    try {
+      final result = await _apiService.post(ApiEndPoints.verifyEmailOTP,
+          data: FormData.fromMap(
+            {
+              "email": email,
+              "token": token,
+            }, // email pendaftar.
+          ));
+      final data = result.data; // Mendapatkan respons dari server.
+      if (data['status_code'] != 200) {
+        throw data[
+            "detail"]; // Jika status code bukan 201, anggap sebagai error.
+      }
+      return ProfileModel.fromJson(
+          data['data']); // Mengembalikan data profil pemilih.
     } catch (e) {
       rethrow; // Mengulang error jika terjadi kesalahan.
     }

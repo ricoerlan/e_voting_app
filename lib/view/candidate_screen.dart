@@ -309,23 +309,25 @@ class CandidateCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               // Menampilkan informasi nama dan fakultas kandidat
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    candidate.name ?? '',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      candidate.name ?? '',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueAccent,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    candidate.faculty ?? '',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 22),
-                  ),
-                ],
+                    const SizedBox(height: 5),
+                    Text(
+                      candidate.faculty ?? '',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 22),
+                    ),
+                  ],
+                ),
               ),
               // Menampilkan foto kandidat jika ada
               if (candidate.photo != null)

@@ -1,6 +1,7 @@
 import 'package:e_voting/data/model/profile_model.dart';
 import 'package:e_voting/data/repository/repository.dart';
 import 'package:e_voting/view/auth/login/login_screen.dart';
+import 'package:e_voting/view/auth/otp/otp_screen.dart';
 import 'package:e_voting/view/bottom_nav_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -84,11 +85,9 @@ class AuthController extends GetxController {
           nim: nim,
           password:
               password); // Melakukan panggilan API untuk registrasi pengguna.
-      if (data.id != null) {
-        // Jika registrasi berhasil, simpan data profil dan status komite.
-        await setCurrentProfile(data: data);
-        isCommittee = data.isCommittee;
-      }
+      Get.to(() => OTPScreen(
+            email: data,
+          ));
     } catch (e) {
       // Jika terjadi kesalahan, tampilkan Snackbar dengan pesan error.
       Get.showSnackbar(GetSnackBar(

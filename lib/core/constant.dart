@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Base URL untuk API yang digunakan dalam aplikasi
-const baseUrl = 'http://192.168.20.22:8000';
+const baseUrl = 'http://192.168.1.10:8000';
 // URL endpoint untuk login pengguna (voter)
 const loginUrl =
     '$baseUrl/login_voter'; // Menggabungkan base URL dengan endpoint login untuk pemilih (voter)
@@ -24,6 +24,8 @@ class ApiEndPoints {
 
   // Endpoint untuk registrasi pemilih (voter)
   static const registerVoter = "/register_voter/";
+  static const sendEmailVerification = "/send-email-verification/";
+  static const verifyEmailOTP = "/verify-email-otp";
 
   // Endpoint untuk login pemilih (voter)
   static const loginVoter = "/login_voter/";
